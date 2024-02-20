@@ -1,12 +1,17 @@
-from flask import Flask, url_for, request
+from flask import Flask, url_for, request, render_template, json, redirect
+
+from forms.loginform import LoginForm
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'yandexlyceum_secret_key[jpgwrpjb;igp8esurgjpoesijgupesiouyg5opseijgrt;oseurrt[p9aeustrohijse[tphuispe0thiu[pseitjhpseithpsetuph0isjethlosenbpokdfgbmnlsieuthg;psejthi'
 
 
 @app.route('/')
 @app.route('/index')
 def index():
-    return "Привет, Яндекс!"
+    user = "Ученик Яндекс.Лицея"
+    return render_template('index.html', title='Домашняя страница',
+                           username=user)
 
 
 @app.route('/countdown')
@@ -207,6 +212,35 @@ def sample_file_upload():
         print(f.read())
         return "Форма отправлена"
 
+
+@app.route('/odd_even')
+def odd_even():
+    return render_template('odd_even.html', number=2)
+
+
+@app.route('/news')
+def news():
+    with open("static/json/news.json", "rt", encoding="utf8") as f:
+        news_list = json.loads(f.read())
+    print(news_list)
+    return render_template('news.html', news=news_list)
+
+
+@app.route('/queue')
+def queue():
+    return render_template('queue.html', title="Queue")
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        return redirect('/success')
+    return render_template('login.html', title='Авторизация', form=form)
+
+
+@app.route('/success')
+def success():
+    return render_template('success.html', title='Успешный Успех!')
 
 if __name__ == '__main__':
     app.run(port=8080, host='127.0.0.1')
