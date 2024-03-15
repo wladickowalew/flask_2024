@@ -1,5 +1,6 @@
 import random
 
+from data import db_session
 from data.news import News
 from data.users import User
 
@@ -22,3 +23,4 @@ def add_news(db_sess):
                     is_private=random.randint(0, 1))
         db_sess.add(news)
     db_sess.commit()
+

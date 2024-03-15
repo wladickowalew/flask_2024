@@ -1,8 +1,9 @@
-from flask import Flask, url_for, request, render_template, json, redirect, abort
-from data import db_session
+from flask import Flask, url_for, request, render_template, json, redirect, abort, jsonify
+from data import db_session, news_api
 from forms.loginform import LoginForm
 from forms.news import NewsForm
 from forms.user import RegisterForm
+from flask import make_response
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from tests.bd_orm_tests import *
 
@@ -11,6 +12,15 @@ app.config[
     'SECRET_KEY'] = 'yandexlyceum_secret_key[jpgwrpjb;igp8esurgjpoesijgupesiouyg5opseijgrt;oseurrt[p9aeustrohijse[tphuispe0thiu[pseitjhpseithpsetuph0isjethlosenbpokdfgbmnlsieuthg;psejthi'
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+@app.errorhandler(404)
+def not_found(_):
+    return make_response(jsonify({'error': 'Not found'}), 404)
+
+
+@app.errorhandler(400)
+def bad_request(_):
+    return make_response(jsonify({'error': 'Bad Request'}), 400)
 
 
 @app.route("/")
@@ -255,6 +265,7 @@ def login():
                                form=form)
     return render_template('login.html', title='Авторизация', form=form)
 
+
 @app.route('/register', methods=['GET', 'POST'])
 def reqister():
     form = RegisterForm()
@@ -298,7 +309,7 @@ def logout():
     return redirect("/")
 
 
-@app.route('/news',  methods=['GET', 'POST'])
+@app.route('/news', methods=['GET', 'POST'])
 @login_required
 def add_news():
     form = NewsForm()
@@ -314,6 +325,7 @@ def add_news():
         return redirect('/')
     return render_template('news.html', title='Добавление новости',
                            form=form)
+
 
 @app.route('/news/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -362,9 +374,15 @@ def news_delete(id):
         abort(404)
     return redirect('/')
 
-if __name__ == '__main__':
+
+def main():
     db_session.global_init("db/blogs.db")
-    # db_sess = db_session.create_session()
-    # add_users(db_sess)
-    # add_news(db_sess)
-    app.run(port=8080, host='127.0.0.1')
+    db_sess = db_session.create_session()
+    #add_users(db_sess)
+    #add_news(db_sess)
+    app.register_blueprint(news_api.blueprint)
+    app.run()
+
+
+if __name__ == '__main__':
+    main()
