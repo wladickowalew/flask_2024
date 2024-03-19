@@ -1,4 +1,5 @@
 from flask import Flask, url_for, request, render_template, json, redirect, abort
+from flask_restful import reqparse, abort, Api, Resource
 from data import db_session
 from forms.loginform import LoginForm
 from forms.news import NewsForm
@@ -7,8 +8,9 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from tests.bd_orm_tests import *
 
 app = Flask(__name__)
-app.config[
-    'SECRET_KEY'] = 'yandexlyceum_secret_key[jpgwrpjb;igp8esurgjpoesijgupesiouyg5opseijgrt;oseurrt[p9aeustrohijse[tphuispe0thiu[pseitjhpseithpsetuph0isjethlosenbpokdfgbmnlsieuthg;psejthi'
+api = Api(app)
+
+app.config['SECRET_KEY'] = 'yandexlyceum_secret_key[jpgwrpjb;igp8esurgjpoesijgupesiouyg5opseijgrt;oseurrt[p9aeustrohijse[tphuispe0thiu[pseitjhpseithpsetuph0isjethlosenbpokdfgbmnlsieuthg;psejthi'
 login_manager = LoginManager()
 login_manager.init_app(app)
 
